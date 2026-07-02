@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>색깔 이야기 (Color Story)</title>
-    
+
     <!-- 폰트 로드: Pretendard GOV & Black Han Sans -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard-gov-dynamic-subset.css" />
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
-    
+
     <!-- 구글 머테리얼 아이콘 -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
+
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -43,7 +43,7 @@
             font-family: 'Pretendard GOV', sans-serif;
             transition: background-color 0.3s, color 0.3s;
         }
-        
+
         .title-font {
             font-family: 'Black Han Sans', sans-serif;
         }
@@ -73,14 +73,14 @@
 
     <!-- 메인 컨텐츠 -->
     <main class="flex-grow w-full max-w-5xl mx-auto p-4 flex flex-col items-center justify-center">
-        
+
         <!-- 1. 초기 셋업 화면 (그리드 설정만 표시) -->
         <section id="setupScreen" class="flex flex-col items-center justify-center w-full max-w-md bg-white dark:bg-darkCard p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 gap-8">
             <div class="text-center space-y-2">
                 <h2 class="text-2xl title-font text-gray-800 dark:text-gray-100">팔레트 만들기</h2>
                 <p class="text-gray-500 dark:text-gray-400 text-sm">원하는 칸 수를 입력하고 나만의 색깔을 채워보세요.</p>
             </div>
-            
+
             <div class="flex items-center justify-center gap-4 w-full">
                 <div class="flex flex-col items-center gap-2">
                     <label class="text-xs font-bold text-gray-400">가로</label>
@@ -96,7 +96,7 @@
             <button onclick="app.createNewGrid()" class="w-full bg-brand hover:bg-red-500 text-white py-4 rounded-xl font-bold text-lg transition shadow-md">
                 그리드 생성하기
             </button>
-            
+
             <!-- 백업 불러오기 (설정 화면에서도 가능) -->
             <label class="flex items-center justify-center gap-1 text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-300 cursor-pointer transition w-full">
                 <span class="material-icons text-base">upload</span> 기존 백업파일(.json) 불러오기
@@ -106,13 +106,18 @@
 
         <!-- 2. 워크스페이스 화면 (초기엔 숨김) -->
         <section id="workspaceScreen" class="hidden flex-col w-full gap-6">
-            
+
             <!-- 팔레트 상단 컨트롤 -->
             <div class="flex justify-between items-center px-2">
                 <h2 class="text-xl font-bold title-font text-gray-800 dark:text-gray-200">나만의 팔레트</h2>
-                <button onclick="app.resetToSetup()" class="flex items-center gap-1 text-sm bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition shadow-sm">
-                    <span class="material-icons text-sm">refresh</span> 다시 만들기
-                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="app.resetToSetup()" class="flex items-center gap-1 text-sm bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition shadow-sm">
+                        <span class="material-icons text-sm">refresh</span> 다시 만들기
+                    </button>
+                    <button onclick="app.clearSavedPalette()" class="flex items-center gap-1 text-sm bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200 px-3 py-1.5 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/70 transition shadow-sm">
+                        <span class="material-icons text-sm">delete</span> 초기화
+                    </button>
+                </div>
             </div>
 
             <!-- 팔레트 래퍼 (이 부분이 이미지로 캡처됩니다) -->
@@ -162,7 +167,7 @@
                         <span class="material-icons">close</span>
                     </button>
                 </div>
-                
+
                 <div class="space-y-4">
                     <!-- 색상 선택 -->
                     <div>
@@ -170,7 +175,7 @@
                         <div class="grid grid-cols-5 md:grid-cols-10 gap-2 mb-4" id="colorFamilies">
                             <!-- JS로 동적 생성 -->
                         </div>
-                        
+
                         <div id="shadesContainer" class="hidden mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
                             <label class="block text-xs font-bold mb-2 text-gray-500">2. 디테일 색상 선택 (20가지)</label>
                             <div class="grid grid-cols-5 md:grid-cols-10 gap-1" id="colorShades">
@@ -216,7 +221,8 @@
                 cells: [] // { id, color, name, story }
             },
             currentEditingId: null,
-            
+            storageKey: 'colorStoryPalette',
+
             colorFamiliesData: [
                 { name: '레드', h: 0, s: 85 },
                 { name: '오렌지', h: 25, s: 90 },
@@ -234,11 +240,11 @@
             init() {
                 this.initTheme();
                 this.initColors();
-                
+
                 // URL 파라미터 확인 후 복원
                 const urlParams = new URLSearchParams(window.location.search);
                 const dataParam = urlParams.get('data');
-                
+
                 if (dataParam) {
                     try {
                         const jsonStr = LZString.decompressFromEncodedURIComponent(dataParam);
@@ -246,13 +252,45 @@
                         this.state = parsedData;
                         document.getElementById('gridCols').value = this.state.cols;
                         document.getElementById('gridRows').value = this.state.rows;
+                        this.saveState();
                         this.showWorkspace();
                     } catch (e) {
                         alert("유효하지 않은 링크 데이터입니다.");
                         this.showSetup();
                     }
+                } else if (this.loadSavedPalette()) {
+                    this.showWorkspace();
                 } else {
                     this.showSetup();
+                }
+            },
+
+            // 로컬 스토리지에 팔레트 저장
+            saveState() {
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(this.state));
+                } catch (error) {
+                    console.warn('팔레트를 로컬 스토리지에 저장하지 못했습니다.', error);
+                }
+            },
+
+            // 로컬 스토리지에서 팔레트 복원
+            loadSavedPalette() {
+                try {
+                    const savedData = localStorage.getItem(this.storageKey);
+                    if (!savedData) return false;
+
+                    const parsedData = JSON.parse(savedData);
+                    if (!parsedData.cols || !parsedData.rows || !Array.isArray(parsedData.cells)) return false;
+
+                    this.state = parsedData;
+                    document.getElementById('gridCols').value = this.state.cols;
+                    document.getElementById('gridRows').value = this.state.rows;
+                    return true;
+                } catch (error) {
+                    console.warn('저장된 팔레트를 불러오지 못했습니다.', error);
+                    localStorage.removeItem(this.storageKey);
+                    return false;
                 }
             },
 
@@ -275,10 +313,23 @@
 
             // 다시 만들기
             resetToSetup() {
-                if(confirm("작성된 데이터가 초기화됩니다. 계속하시겠습니까?")) {
+                if(confirm("새 그리드를 만들기 위해 설정 화면으로 이동할까요? 현재 팔레트는 브라우저에 저장됩니다.")) {
+                    this.saveState();
                     this.showSetup();
                     // URL 파라미터 초기화
                     window.history.pushState({}, document.title, window.location.pathname);
+                }
+            },
+
+            // 저장된 팔레트와 화면 초기화
+            clearSavedPalette() {
+                if(confirm("저장된 팔레트와 현재 내용을 모두 초기화하시겠습니까?")) {
+                    localStorage.removeItem(this.storageKey);
+                    this.state = { cols: 3, rows: 3, cells: [] };
+                    document.getElementById('gridCols').value = 3;
+                    document.getElementById('gridRows').value = 3;
+                    window.history.pushState({}, document.title, window.location.pathname);
+                    this.showSetup();
                 }
             },
 
@@ -287,7 +338,7 @@
                 const toggleBtn = document.getElementById('themeToggle');
                 const themeIcon = document.getElementById('themeIcon');
                 const html = document.documentElement;
-                
+
                 // 로컬 스토리지 확인
                 if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     html.classList.add('dark');
@@ -313,7 +364,7 @@
             initColors() {
                 const familyContainer = document.getElementById('colorFamilies');
                 familyContainer.innerHTML = '';
-                
+
                 this.colorFamiliesData.forEach((family, index) => {
                     const btn = document.createElement('button');
                     const baseColor = this.hslToHex(family.h, family.s, 50); // 중간 명도를 대표 색상으로 표시
@@ -346,12 +397,12 @@
                 const family = this.colorFamiliesData[familyIndex];
                 const shadesContainer = document.getElementById('colorShades');
                 shadesContainer.innerHTML = '';
-                
+
                 // 20단계의 그라데이션 (명도 94% 부터 18% 까지)
                 for (let i = 0; i < 20; i++) {
-                    const l = 94 - (i * 4); 
+                    const l = 94 - (i * 4);
                     const hexColor = this.hslToHex(family.h, family.s, l);
-                    
+
                     const btn = document.createElement('button');
                     btn.className = 'w-full aspect-square rounded-md hover:scale-125 hover:z-10 transition-transform shadow-sm border border-black/5';
                     btn.style.backgroundColor = hexColor;
@@ -359,7 +410,7 @@
                     btn.onclick = () => this.updateSelectedColor(hexColor);
                     shadesContainer.appendChild(btn);
                 }
-                
+
                 document.getElementById('shadesContainer').classList.remove('hidden');
             },
 
@@ -372,7 +423,7 @@
             createNewGrid() {
                 const c = parseInt(document.getElementById('gridCols').value) || 3;
                 const r = parseInt(document.getElementById('gridRows').value) || 3;
-                
+
                 this.state.cols = Math.min(Math.max(c, 1), 10);
                 this.state.rows = Math.min(Math.max(r, 1), 10);
                 this.state.cells = [];
@@ -385,6 +436,7 @@
                         story: ''
                     });
                 }
+                this.saveState();
                 this.showWorkspace();
             },
 
@@ -392,21 +444,21 @@
             renderGrid() {
                 const container = document.getElementById('paletteContainer');
                 container.innerHTML = '';
-                
+
                 // CSS Grid 컬럼 설정
                 container.style.gridTemplateColumns = `repeat(${this.state.cols}, minmax(0, 1fr))`;
 
                 this.state.cells.forEach(cell => {
                     const el = document.createElement('div');
                     const hasData = cell.name !== '';
-                    
+
                     el.className = `
-                        relative aspect-square rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 
-                        cursor-pointer transition-transform hover:scale-[1.02] 
+                        relative aspect-square rounded-2xl shadow-md border-4 border-gray-200 dark:border-gray-700
+                        cursor-pointer transition-transform hover:scale-[1.02]
                         flex items-center justify-center overflow-hidden
                     `;
                     el.style.backgroundColor = cell.color;
-                    
+
                     // 칸 클릭 시 모달 오픈
                     el.onclick = () => this.openModal(cell.id);
 
@@ -431,10 +483,10 @@
             openModal(id) {
                 this.currentEditingId = id;
                 const cell = this.state.cells.find(c => c.id === id);
-                
+
                 const initialColor = cell.name ? cell.color : '#ffb3ba'; // 값이 없으면 기본 핑크 세팅
                 this.updateSelectedColor(initialColor);
-                
+
                 document.getElementById('cellName').value = cell.name;
                 document.getElementById('cellStory').value = cell.story;
                 document.getElementById('shadesContainer').classList.add('hidden'); // 모달 열때마다 서브 팔레트 닫기
@@ -442,7 +494,7 @@
                 const modal = document.getElementById('editModal');
                 const content = document.getElementById('modalContent');
                 modal.classList.remove('hidden');
-                
+
                 // 애니메이션
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
@@ -454,10 +506,10 @@
             closeModal() {
                 const modal = document.getElementById('editModal');
                 const content = document.getElementById('modalContent');
-                
+
                 modal.classList.add('opacity-0');
                 content.classList.add('scale-95');
-                
+
                 setTimeout(() => {
                     modal.classList.add('hidden');
                     this.currentEditingId = null;
@@ -479,6 +531,7 @@
                 const cellIndex = this.state.cells.findIndex(c => c.id === this.currentEditingId);
                 if (cellIndex !== -1) {
                     this.state.cells[cellIndex] = { ...this.state.cells[cellIndex], color, name, story };
+                    this.saveState();
                     this.renderGrid();
                     this.closeModal();
                 }
@@ -487,7 +540,7 @@
             // 1. 화면 그대로 이미지 캡처 (다운로드) - 직접 보이는 화면을 캡처
             async exportImage() {
                 const targetArea = document.getElementById('paletteWrapper');
-                
+
                 try {
                     // html2canvas로 현재 화면에 렌더링된 팔레트 래퍼를 그대로 캡처
                     const canvas = await html2canvas(targetArea, {
@@ -496,7 +549,7 @@
                         useCORS: true,
                         logging: false
                     });
-                    
+
                     const link = document.createElement('a');
                     link.download = `ColorStory_${new Date().getTime()}.jpg`;
                     link.href = canvas.toDataURL('image/jpeg', 0.9);
@@ -549,7 +602,7 @@
                     const jsonStr = JSON.stringify(this.state);
                     const compressed = LZString.compressToEncodedURIComponent(jsonStr);
                     const shareUrl = `${window.location.origin}${window.location.pathname}?data=${compressed}`;
-                    
+
                     if (shareUrl.length > 2000) {
                         alert("데이터가 너무 많아 링크로 생성할 수 없습니다. JSON 백업 기능을 이용해주세요.");
                         return;
@@ -561,7 +614,7 @@
                     tempTextarea.select();
                     document.execCommand('copy');
                     document.body.removeChild(tempTextarea);
-                    
+
                     alert("공유 링크가 클립보드에 복사되었습니다!\n이 링크를 통해 다른 기기에서 팔레트를 복원할 수 있습니다.");
                 } catch (e) {
                     alert("링크 생성 중 오류가 발생했습니다.");
@@ -592,6 +645,7 @@
                             this.state = parsedData;
                             document.getElementById('gridCols').value = this.state.cols;
                             document.getElementById('gridRows').value = this.state.rows;
+                            this.saveState();
                             this.showWorkspace();
                             alert("데이터 복원이 완료되었습니다.");
                         } else {
