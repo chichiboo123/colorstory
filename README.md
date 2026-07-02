@@ -1,43 +1,38 @@
 # Color Story
 
-Color Story는 원하는 크기의 색상 팔레트를 만들고, 각 색상에 이름과 이야기를 담아 공유할 수 있는 단일 HTML 웹 앱입니다.
+Color Story is a single-page palette maker for naming colors, writing stories, saving work locally, and sharing or backing up the result.
 
-## 주요 기능
+## Features
 
-- **맞춤형 그리드 생성**: 가로와 세로 칸 수를 1~10 사이로 지정해 팔레트를 만들 수 있습니다.
-- **색상 선택**: 기본 색상 계열과 20단계 디테일 팔레트, 직접 색상 피커를 함께 제공합니다.
-- **색깔 이야기 작성**: 각 카드에 색상 이름과 선택 사항인 이야기를 저장할 수 있습니다.
-- **로컬 저장**: 작성한 팔레트는 브라우저 로컬 스토리지에 저장되어 새로고침해도 유지됩니다.
-- **초기화**: 초기화 버튼으로 저장된 팔레트와 현재 작업 내용을 한 번에 지울 수 있습니다.
-- **공유 및 백업**: 이미지 캡처, 텍스트 복사, 공유 링크 생성, JSON 백업 및 복원을 지원합니다.
-- **다크 모드**: 브라우저 설정과 사용자의 선택에 맞춰 밝은/어두운 테마를 전환할 수 있습니다.
+- Create a custom grid from 1×1 to 10×10.
+- Set the card border thickness before or after creating a palette.
+- Edit each card's color name and story directly on the card with borderless fields.
+- Open detailed color controls from a card-only action button that appears after selecting a card.
+- Preserve line breaks in story text.
+- Save palette state in browser local storage so refreshes do not erase work.
+- Export as an image, copy text, create a compressed share link, or use the top-right disk menu for JSON backup/restore.
+- Switch between Korean, English, and Japanese.
+- Use dark/light mode and mobile-friendly controls.
+- Show a full-grid notice and offer an add-row action when every card is filled.
 
-## 사용 방법
+## Usage
 
-1. `index.html` 파일을 브라우저에서 엽니다.
-2. 팔레트의 가로/세로 칸 수를 입력한 뒤 **그리드 생성하기**를 누릅니다.
-3. 카드를 클릭해 색상, 이름, 이야기를 입력하고 저장합니다.
-4. 필요에 따라 하단 버튼으로 캡처, 복사, 공유, 백업을 실행합니다.
-5. 저장된 내용을 모두 지우려면 상단의 **초기화** 버튼을 누릅니다.
+1. Open `index.html` in a browser.
+2. Choose columns, rows, and border width, then create the grid.
+3. Type names and stories directly into cards.
+4. Click a card to reveal the details button, then adjust its color if needed.
+5. Use the top-right disk icon to choose backup or restore.
 
-## 개발 및 실행
+## Development
 
-별도의 빌드 과정 없이 정적 파일만으로 실행됩니다.
+No build step is required. To serve locally:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-그런 다음 브라우저에서 `http://localhost:8000`으로 접속합니다.
+Open `http://localhost:8000` in your browser.
 
-## 사용 기술
+## Storage
 
-- HTML, CSS, JavaScript
-- Tailwind CSS CDN
-- Material Icons
-- html2canvas
-- lz-string
-
-## 데이터 저장 안내
-
-팔레트 데이터는 사용자의 브라우저 로컬 스토리지에 저장됩니다. 브라우저 데이터 삭제, 다른 브라우저 사용, 시크릿 모드 종료 시에는 데이터가 사라질 수 있으므로 중요한 팔레트는 JSON 백업을 함께 사용하세요.
+Palette data is stored in the browser's local storage. Use JSON backup for important palettes because browser data can be cleared by private browsing, cache cleanup, or switching devices.
