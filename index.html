@@ -66,6 +66,10 @@
         .krds-danger:hover { background: #FAD8E0; }
         .dark .krds-danger { background: rgba(127, 29, 29, 0.45); color: #fecaca; border-color: rgba(248, 113, 113, 0.4); }
         .krds-field { min-height: 44px; border-radius: 10px; border: 1px solid #D8D8D8; }
+        .palette-card {
+            min-height: clamp(180px, 24vw, 260px);
+            align-self: stretch;
+        }
         .card-text-input {
             width: 100%;
             background: transparent;
@@ -74,6 +78,17 @@
             text-align: center;
             color: inherit;
             resize: none;
+            overflow: hidden;
+        }
+        .card-name-input {
+            line-height: 1.25;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+        .card-story-input {
+            line-height: 1.45;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
         }
         .card-text-input::placeholder { color: rgba(107, 114, 128, 0.85); }
         .card-actions { opacity: 0; transform: translateY(-4px); pointer-events: none; }
@@ -81,7 +96,7 @@
         @media (max-width: 640px) {
             .krds-btn { min-height: 48px; padding: 0 14px; }
             #paletteContainer { gap: 0.5rem !important; }
-            .palette-card { min-height: 112px; }
+            .palette-card { min-height: 170px; }
         }
     </style>
 </head>
@@ -471,7 +486,7 @@
                 this.state.cells.forEach(cell => {
                     const el = document.createElement('div');
                     const hasData = cell.name || cell.story;
-                    el.className = `palette-card relative aspect-square rounded-2xl shadow-md cursor-pointer transition-transform hover:scale-[1.01] flex items-center justify-center overflow-hidden ${this.activeCardId === cell.id ? 'is-active' : ''}`;
+                    el.className = `palette-card relative rounded-2xl shadow-md cursor-pointer transition-transform hover:scale-[1.01] flex items-stretch justify-center ${this.activeCardId === cell.id ? 'is-active' : ''}`;
                     el.style.backgroundColor = cell.color;
                     el.style.border = `${this.state.borderWidth}px solid ${hasData ? cell.color : '#d1d5db'}`;
                     el.onclick = () => { this.activeCardId = cell.id; this.renderGrid(); };
@@ -481,13 +496,21 @@
                                 <span class="material-icons text-base">tune</span><span>${this.t('detail')}</span>
                             </button>
                         </div>
-                        <div class="absolute inset-2 md:inset-3 bg-white/90 dark:bg-black/70 backdrop-blur-md rounded-xl p-2 sm:p-3 flex flex-col items-center justify-center text-center shadow-sm">
-                            <input class="card-text-input font-bold text-base sm:text-lg md:text-2xl mb-1 text-gray-900 dark:text-white" value="${this.escapeAttr(cell.name)}" placeholder="${this.t('emptyName')}" onclick="event.stopPropagation(); app.activeCardId=${cell.id};" oninput="app.updateCellInline(${cell.id}, 'name', this.value)">
-                            <textarea rows="3" class="card-text-input text-xs sm:text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap" placeholder="${this.t('emptyStory')}" onclick="event.stopPropagation(); app.activeCardId=${cell.id};" oninput="app.updateCellInline(${cell.id}, 'story', this.value)">${this.escapeHtml(cell.story)}</textarea>
+                        <div class="m-2 md:m-3 bg-white/90 dark:bg-black/70 backdrop-blur-md rounded-xl p-3 sm:p-4 flex flex-col items-center justify-center text-center shadow-sm w-full min-h-[calc(100%-1rem)]">
+                            <textarea rows="1" class="card-text-input card-name-input font-bold text-base sm:text-lg md:text-2xl mb-2 text-gray-900 dark:text-white" placeholder="${this.t('emptyName')}" onclick="event.stopPropagation(); app.activeCardId=${cell.id};" oninput="app.updateCellInline(${cell.id}, 'name', this.value); app.resizeTextarea(this);">${this.escapeHtml(cell.name)}</textarea>
+                            <textarea rows="1" class="card-text-input card-story-input text-xs sm:text-sm text-gray-700 dark:text-gray-300" placeholder="${this.t('emptyStory')}" onclick="event.stopPropagation(); app.activeCardId=${cell.id};" oninput="app.updateCellInline(${cell.id}, 'story', this.value); app.resizeTextarea(this);">${this.escapeHtml(cell.story)}</textarea>
                         </div>
                     `;
                     container.appendChild(el);
                 });
+                this.resizeAllTextareas();
+            },
+            resizeTextarea(textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height = `${textarea.scrollHeight}px`;
+            },
+            resizeAllTextareas() {
+                document.querySelectorAll('.card-text-input').forEach(textarea => this.resizeTextarea(textarea));
             },
             clearActiveCard() {
                 if (this.activeCardId !== null) {
