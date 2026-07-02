@@ -149,10 +149,6 @@
                     <label class="text-xs font-bold text-gray-500" for="gridRows" data-i18n="rows">세로</label>
                     <input type="number" id="gridRows" min="1" max="10" value="3" class="krds-field w-full p-3 text-xl dark:bg-gray-800 dark:border-gray-600 text-center font-bold" aria-label="rows">
                 </div>
-                <div class="col-span-2 flex flex-col gap-2">
-                    <label class="text-xs font-bold text-gray-500" for="borderWidth" data-i18n="borderWidth">테두리 두께</label>
-                    <input type="number" id="borderWidth" min="0" max="12" value="4" class="krds-field w-full p-3 text-base dark:bg-gray-800 dark:border-gray-600 text-center font-bold" aria-label="border width">
-                </div>
             </div>
 
             <button onclick="app.createNewGrid()" class="krds-btn krds-primary w-full text-lg" data-i18n="createGrid">그리드 생성하기</button>
@@ -324,7 +320,6 @@
             syncSetupInputs() {
                 document.getElementById('gridCols').value = this.state.cols;
                 document.getElementById('gridRows').value = this.state.rows;
-                document.getElementById('borderWidth').value = this.state.borderWidth;
                 document.getElementById('workspaceBorderWidth').value = this.state.borderWidth;
             },
             saveState() {
@@ -447,7 +442,7 @@
                 this.state = this.normalizeState({
                     cols: document.getElementById('gridCols').value,
                     rows: document.getElementById('gridRows').value,
-                    borderWidth: document.getElementById('borderWidth').value,
+                    borderWidth: this.state.borderWidth,
                     cells: []
                 });
                 this.saveState();
@@ -567,9 +562,27 @@
                     this.closeModal();
                 }
             },
+            prepareExportClone(clonedDocument) {
+                clonedDocument.querySelectorAll('.card-text-input').forEach(textarea => {
+                    const textBlock = clonedDocument.createElement('div');
+                    textBlock.className = textarea.className;
+                    textBlock.textContent = textarea.value || textarea.getAttribute('placeholder') || '';
+                    textBlock.style.height = 'auto';
+                    textBlock.style.minHeight = `${textarea.scrollHeight}px`;
+                    textBlock.style.whiteSpace = textarea.classList.contains('card-story-input') ? 'pre-wrap' : 'normal';
+                    textBlock.style.overflow = 'visible';
+                    textarea.replaceWith(textBlock);
+                });
+            },
             async exportImage() {
                 try {
-                    const canvas = await html2canvas(document.getElementById('paletteWrapper'), { scale: 2, backgroundColor: null, useCORS: true, logging: false });
+                    const canvas = await html2canvas(document.getElementById('paletteWrapper'), {
+                        scale: 2,
+                        backgroundColor: null,
+                        useCORS: true,
+                        logging: false,
+                        onclone: (clonedDocument) => this.prepareExportClone(clonedDocument)
+                    });
                     const link = document.createElement('a');
                     link.download = `ColorStory_${new Date().getTime()}.jpg`;
                     link.href = canvas.toDataURL('image/jpeg', 0.9);
