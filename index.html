@@ -81,16 +81,98 @@
             overflow: hidden;
         }
         .card-name-input {
-            line-height: 1.25;
-            white-space: normal;
+            line-height: 1.3;
+            white-space: pre-wrap;
             overflow-wrap: anywhere;
         }
         .card-story-input {
-            line-height: 1.45;
+            line-height: 1.55;
             overflow-wrap: anywhere;
             white-space: pre-wrap;
         }
-        .card-text-input::placeholder { color: rgba(107, 114, 128, 0.85); }
+        .card-text-input::placeholder { color: rgba(107, 114, 128, 0.9); }
+
+        /* 친근한 토스트 알림 */
+        #toastContainer {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%);
+            z-index: 60;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+            width: max-content;
+            max-width: min(92vw, 420px);
+        }
+        .toast {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+            opacity: 0;
+            transform: translateY(16px) scale(0.96);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .toast.show { opacity: 1; transform: translateY(0) scale(1); }
+        .toast .toast-emoji { font-size: 1.25rem; line-height: 1; }
+        .toast-success { background: linear-gradient(135deg, #2fae66, #1f9d57); }
+        .toast-error { background: linear-gradient(135deg, #f2637a, #e0364f); }
+        .toast-info { background: linear-gradient(135deg, #3d7bf0, #246BEB); }
+
+        /* 줄바꿈 안내 문구 */
+        .hint-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .dark .hint-text { color: #a1a1aa; }
+
+        /* 워크스페이스 안내 팁 */
+        #editTip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff7ed;
+            color: #9a3412;
+            border: 1px solid #fed7aa;
+            border-radius: 14px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        .dark #editTip { background: rgba(124, 45, 18, 0.35); color: #fed7aa; border-color: rgba(251, 146, 60, 0.4); }
+
+        /* 그리드 수 조절 스테퍼 버튼 */
+        .stepper-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #D8D8D8;
+            background: #fff;
+            color: #246BEB;
+            font-weight: 700;
+            flex-shrink: 0;
+            transition: background-color 0.15s, transform 0.1s;
+        }
+        .stepper-btn:hover { background: #eff4ff; }
+        .stepper-btn:active { transform: scale(0.92); }
+        .dark .stepper-btn { background: #2b2b2b; border-color: #52525b; color: #93b4f8; }
+        .dark .stepper-btn:hover { background: #3f3f46; }
         .card-actions { opacity: 0; transform: translateY(-4px); pointer-events: none; }
         .palette-card.is-active .card-actions { opacity: 1; transform: translateY(0); pointer-events: auto; }
         @media (max-width: 640px) {
@@ -143,11 +225,19 @@
             <div class="grid grid-cols-2 gap-4 w-full">
                 <div class="flex flex-col items-center gap-2">
                     <label class="text-xs font-bold text-gray-500" for="gridCols" data-i18n="cols">가로</label>
-                    <input type="number" id="gridCols" min="1" max="10" value="3" class="krds-field w-full p-3 text-xl dark:bg-gray-800 dark:border-gray-600 text-center font-bold" aria-label="columns">
+                    <div class="flex items-center gap-2 w-full">
+                        <button type="button" class="stepper-btn text-2xl" onclick="app.stepGrid('gridCols', -1)" aria-label="minus">−</button>
+                        <input type="number" id="gridCols" min="1" max="10" value="3" class="krds-field w-full p-3 text-xl dark:bg-gray-800 dark:border-gray-600 text-center font-bold" aria-label="columns">
+                        <button type="button" class="stepper-btn text-2xl" onclick="app.stepGrid('gridCols', 1)" aria-label="plus">+</button>
+                    </div>
                 </div>
                 <div class="flex flex-col items-center gap-2">
                     <label class="text-xs font-bold text-gray-500" for="gridRows" data-i18n="rows">세로</label>
-                    <input type="number" id="gridRows" min="1" max="10" value="3" class="krds-field w-full p-3 text-xl dark:bg-gray-800 dark:border-gray-600 text-center font-bold" aria-label="rows">
+                    <div class="flex items-center gap-2 w-full">
+                        <button type="button" class="stepper-btn text-2xl" onclick="app.stepGrid('gridRows', -1)" aria-label="minus">−</button>
+                        <input type="number" id="gridRows" min="1" max="10" value="3" class="krds-field w-full p-3 text-xl dark:bg-gray-800 dark:border-gray-600 text-center font-bold" aria-label="rows">
+                        <button type="button" class="stepper-btn text-2xl" onclick="app.stepGrid('gridRows', 1)" aria-label="plus">+</button>
+                    </div>
                 </div>
             </div>
 
@@ -177,6 +267,11 @@
                 </div>
             </div>
 
+            <div id="editTip">
+                <span class="material-icons text-base">touch_app</span>
+                <span data-i18n="editTip">칸을 눌러 색 이름과 이야기를 직접 적어보세요!</span>
+            </div>
+
             <div id="paletteWrapper" class="bg-white dark:bg-darkCard p-3 sm:p-4 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-x-auto">
                 <div id="paletteContainer" class="grid gap-3 md:gap-4 w-full min-w-0"></div>
                 <div class="text-center text-gray-400 mt-8 text-sm font-medium title-font opacity-50">Color Story</div>
@@ -199,6 +294,19 @@
     <footer class="text-center py-6 mt-auto">
         <a href="https://litt.ly/chichiboo" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-brand transition text-sm font-medium focus:outline-brand rounded px-2 py-1">Created by. 교육뮤지컬 꿈꾸는 치수쌤</a>
     </footer>
+
+    <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+    <div id="confirmModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-[55] p-4 opacity-0 transition-opacity duration-200">
+        <div id="confirmContent" class="bg-white dark:bg-darkCard w-full max-w-sm rounded-2xl shadow-xl p-6 transform scale-95 transition-transform duration-200 text-center">
+            <div class="text-4xl mb-3" id="confirmIcon">🤔</div>
+            <p id="confirmMessage" class="text-base font-bold text-gray-800 dark:text-gray-100 mb-6 whitespace-pre-line"></p>
+            <div class="flex gap-3">
+                <button id="confirmCancelBtn" class="krds-btn krds-secondary flex-1" data-i18n="cancel">취소</button>
+                <button id="confirmOkBtn" class="krds-btn krds-primary flex-1" data-i18n="confirmYes">확인</button>
+            </div>
+        </div>
+    </div>
 
     <div id="editModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-darkCard w-full max-w-md rounded-2xl shadow-xl overflow-hidden transform scale-95 transition-transform duration-300 max-h-[92vh] overflow-y-auto" id="modalContent">
@@ -226,11 +334,12 @@
 
                     <div>
                         <label for="cellName" class="block text-sm font-bold mb-2" data-i18n="nameRequired">이름 (필수)</label>
-                        <input type="text" id="cellName" class="krds-field w-full p-3 dark:bg-gray-800 dark:border-gray-600" data-i18n-placeholder="namePlaceholder">
+                        <textarea id="cellName" rows="1" class="krds-field w-full p-3 dark:bg-gray-800 dark:border-gray-600 resize-none overflow-hidden" data-i18n-placeholder="namePlaceholder" oninput="app.resizeTextarea(this)"></textarea>
                     </div>
                     <div>
                         <label for="cellStory" class="block text-sm font-bold mb-2" data-i18n="storyOptional">이야기 (선택)</label>
                         <textarea id="cellStory" rows="4" class="krds-field w-full p-3 dark:bg-gray-800 dark:border-gray-600 resize-none" data-i18n-placeholder="storyPlaceholder"></textarea>
+                        <p class="hint-text"><span class="material-icons text-sm">keyboard_return</span><span data-i18n="lineBreakHint">Enter 키를 누르면 줄을 바꿀 수 있어요.</span></p>
                     </div>
                 </div>
 
@@ -252,19 +361,69 @@
             currentLang: 'ko',
             translations: {
                 ko: {
-                    setupTitle: '팔레트 만들기', setupDesc: '원하는 칸 수를 입력하고 나만의 색깔을 채워보세요.', cols: '가로', rows: '세로', borderWidth: '테두리 두께', createGrid: '그리드 생성하기', myPalette: '나만의 팔레트', addRow: '줄 추가', remake: '다시 만들기', reset: '초기화', image: '이미지', text: '텍스트', link: '링크', backup: '백업', restore: '복원', modalTitle: '색깔 담기', colorFamily: '1. 기본 색상 계열 (10가지)', colorShade: '2. 디테일 색상 선택 (20가지)', selectedColor: '최종 선택 색상:', customColor: '직접 혼합', nameRequired: '이름 (필수)', storyOptional: '이야기 (선택)', cancel: '취소', save: '저장하기', detail: '세부사항', emptyName: '색 이름', emptyStory: '이야기를 입력하세요', namePlaceholder: '예: 봄바람 핑크', storyPlaceholder: '이 색상과 관련된 당신의 이야기를 적어보세요...', status: '{filled}/{total}칸 사용 중', fullStatus: '모든 칸이 채워졌어요. 줄 추가로 공간을 넓힐 수 있습니다.', resetConfirm: '저장된 팔레트와 현재 내용을 모두 초기화하시겠습니까?', remakeConfirm: '새 그리드를 만들기 위해 설정 화면으로 이동할까요? 현재 팔레트는 브라우저에 저장됩니다.', invalidLink: '유효하지 않은 링크 데이터입니다.', requiredName: '이름은 필수 입력 항목입니다.', noCopy: '복사할 색깔 데이터가 없습니다.', copied: '클립보드에 복사되었습니다!', copyFail: '복사에 실패했습니다.', noShare: '공유할 색깔 데이터가 없습니다.', linkTooLong: '데이터가 너무 많아 링크로 생성할 수 없습니다. 백업 기능을 이용해주세요.', shared: '공유 링크가 클립보드에 복사되었습니다!', imageError: '이미지 캡처 중 오류가 발생했습니다.', restoreDone: '데이터 복원이 완료되었습니다.', restoreInvalid: '올바르지 않은 백업 파일 형식입니다.', restoreError: '파일을 읽는 중 오류가 발생했습니다.'
+                    setupTitle: '팔레트 만들기', setupDesc: '원하는 칸 수를 입력하고 나만의 색깔을 채워보세요.', cols: '가로', rows: '세로', borderWidth: '테두리 두께', createGrid: '그리드 생성하기', myPalette: '나만의 팔레트', addRow: '줄 추가', remake: '다시 만들기', reset: '초기화', image: '이미지', text: '텍스트', link: '링크', backup: '백업', restore: '복원', modalTitle: '색깔 담기', colorFamily: '1. 기본 색상 계열 (10가지)', colorShade: '2. 디테일 색상 선택 (20가지)', selectedColor: '최종 선택 색상:', customColor: '직접 혼합', nameRequired: '이름 (필수)', storyOptional: '이야기 (선택)', cancel: '취소', save: '저장하기', detail: '세부사항', emptyName: '색 이름', emptyStory: '이야기를 입력하세요', namePlaceholder: '예: 봄바람 핑크', storyPlaceholder: '이 색상과 관련된 당신의 이야기를 적어보세요...', status: '{filled}/{total}칸 사용 중', fullStatus: '모든 칸이 채워졌어요. 줄 추가로 공간을 넓힐 수 있습니다.', resetConfirm: '저장된 팔레트와 현재 내용을 모두 초기화하시겠습니까?', remakeConfirm: '새 그리드를 만들기 위해 설정 화면으로 이동할까요? 현재 팔레트는 브라우저에 저장됩니다.', invalidLink: '유효하지 않은 링크 데이터입니다.', requiredName: '이름은 필수 입력 항목입니다.', noCopy: '복사할 색깔 데이터가 없습니다.', copied: '클립보드에 복사되었습니다!', copyFail: '복사에 실패했습니다.', noShare: '공유할 색깔 데이터가 없습니다.', linkTooLong: '데이터가 너무 많아 링크로 생성할 수 없습니다. 백업 기능을 이용해주세요.', shared: '공유 링크가 클립보드에 복사되었습니다!', imageError: '이미지 캡처 중 오류가 발생했습니다.', restoreDone: '데이터 복원이 완료되었습니다.', restoreInvalid: '올바르지 않은 백업 파일 형식입니다.', restoreError: '파일을 읽는 중 오류가 발생했습니다.', confirmYes: '확인', lineBreakHint: 'Enter 키를 누르면 줄을 바꿀 수 있어요.', editTip: '칸을 눌러 색 이름과 이야기를 직접 적어보세요!'
                 },
                 en: {
-                    setupTitle: 'Create palette', setupDesc: 'Choose a grid size and fill it with your own colors.', cols: 'Columns', rows: 'Rows', borderWidth: 'Border width', createGrid: 'Create grid', myPalette: 'My palette', addRow: 'Add row', remake: 'Remake', reset: 'Reset', image: 'Image', text: 'Text', link: 'Link', backup: 'Backup', restore: 'Restore', modalTitle: 'Add color', colorFamily: '1. Color family (10)', colorShade: '2. Shade (20)', selectedColor: 'Selected color:', customColor: 'Custom', nameRequired: 'Name (required)', storyOptional: 'Story (optional)', cancel: 'Cancel', save: 'Save', detail: 'Details', emptyName: 'Color name', emptyStory: 'Write a story', namePlaceholder: 'Example: Spring breeze pink', storyPlaceholder: 'Write your story about this color...', status: '{filled}/{total} cells used', fullStatus: 'The grid is full. Add a row to make more space.', resetConfirm: 'Clear the saved palette and current contents?', remakeConfirm: 'Move to setup to create a new grid? Your current palette will stay saved.', invalidLink: 'Invalid link data.', requiredName: 'Name is required.', noCopy: 'No color data to copy.', copied: 'Copied to clipboard!', copyFail: 'Copy failed.', noShare: 'No color data to share.', linkTooLong: 'Too much data for a link. Use backup instead.', shared: 'Share link copied to clipboard!', imageError: 'An error occurred while creating the image.', restoreDone: 'Data restored.', restoreInvalid: 'Invalid backup file format.', restoreError: 'An error occurred while reading the file.'
+                    setupTitle: 'Create palette', setupDesc: 'Choose a grid size and fill it with your own colors.', cols: 'Columns', rows: 'Rows', borderWidth: 'Border width', createGrid: 'Create grid', myPalette: 'My palette', addRow: 'Add row', remake: 'Remake', reset: 'Reset', image: 'Image', text: 'Text', link: 'Link', backup: 'Backup', restore: 'Restore', modalTitle: 'Add color', colorFamily: '1. Color family (10)', colorShade: '2. Shade (20)', selectedColor: 'Selected color:', customColor: 'Custom', nameRequired: 'Name (required)', storyOptional: 'Story (optional)', cancel: 'Cancel', save: 'Save', detail: 'Details', emptyName: 'Color name', emptyStory: 'Write a story', namePlaceholder: 'Example: Spring breeze pink', storyPlaceholder: 'Write your story about this color...', status: '{filled}/{total} cells used', fullStatus: 'The grid is full. Add a row to make more space.', resetConfirm: 'Clear the saved palette and current contents?', remakeConfirm: 'Move to setup to create a new grid? Your current palette will stay saved.', invalidLink: 'Invalid link data.', requiredName: 'Name is required.', noCopy: 'No color data to copy.', copied: 'Copied to clipboard!', copyFail: 'Copy failed.', noShare: 'No color data to share.', linkTooLong: 'Too much data for a link. Use backup instead.', shared: 'Share link copied to clipboard!', imageError: 'An error occurred while creating the image.', restoreDone: 'Data restored.', restoreInvalid: 'Invalid backup file format.', restoreError: 'An error occurred while reading the file.', confirmYes: 'OK', lineBreakHint: 'Press Enter to start a new line.', editTip: 'Tap a card to write its name and story!'
                 },
                 ja: {
-                    setupTitle: 'パレットを作成', setupDesc: 'グリッド数を決めて、自分だけの色を入れましょう。', cols: '横', rows: '縦', borderWidth: '枠線の太さ', createGrid: 'グリッド作成', myPalette: '私のパレット', addRow: '行を追加', remake: '作り直す', reset: '初期化', image: '画像', text: 'テキスト', link: 'リンク', backup: 'バックアップ', restore: '復元', modalTitle: '色を入れる', colorFamily: '1. 基本色系統（10）', colorShade: '2. 詳細色（20）', selectedColor: '選択色:', customColor: '直接選択', nameRequired: '名前（必須）', storyOptional: 'ストーリー（任意）', cancel: 'キャンセル', save: '保存', detail: '詳細', emptyName: '色の名前', emptyStory: 'ストーリーを書く', namePlaceholder: '例: 春風ピンク', storyPlaceholder: 'この色にまつわる話を書いてください...', status: '{filled}/{total}マス使用中', fullStatus: 'すべてのマスが埋まりました。行を追加できます。', resetConfirm: '保存されたパレットと現在の内容を初期化しますか？', remakeConfirm: '新しいグリッド作成のため設定画面へ移動しますか？現在のパレットは保存されます。', invalidLink: '無効なリンクデータです。', requiredName: '名前は必須です。', noCopy: 'コピーする色データがありません。', copied: 'クリップボードにコピーしました！', copyFail: 'コピーに失敗しました。', noShare: '共有する色データがありません。', linkTooLong: 'データが多すぎます。バックアップを利用してください。', shared: '共有リンクをコピーしました！', imageError: '画像作成中にエラーが発生しました。', restoreDone: 'データを復元しました。', restoreInvalid: 'バックアップファイル形式が正しくありません。', restoreError: 'ファイル読み込み中にエラーが発生しました。'
+                    setupTitle: 'パレットを作成', setupDesc: 'グリッド数を決めて、自分だけの色を入れましょう。', cols: '横', rows: '縦', borderWidth: '枠線の太さ', createGrid: 'グリッド作成', myPalette: '私のパレット', addRow: '行を追加', remake: '作り直す', reset: '初期化', image: '画像', text: 'テキスト', link: 'リンク', backup: 'バックアップ', restore: '復元', modalTitle: '色を入れる', colorFamily: '1. 基本色系統（10）', colorShade: '2. 詳細色（20）', selectedColor: '選択色:', customColor: '直接選択', nameRequired: '名前（必須）', storyOptional: 'ストーリー（任意）', cancel: 'キャンセル', save: '保存', detail: '詳細', emptyName: '色の名前', emptyStory: 'ストーリーを書く', namePlaceholder: '例: 春風ピンク', storyPlaceholder: 'この色にまつわる話を書いてください...', status: '{filled}/{total}マス使用中', fullStatus: 'すべてのマスが埋まりました。行を追加できます。', resetConfirm: '保存されたパレットと現在の内容を初期化しますか？', remakeConfirm: '新しいグリッド作成のため設定画面へ移動しますか？現在のパレットは保存されます。', invalidLink: '無効なリンクデータです。', requiredName: '名前は必須です。', noCopy: 'コピーする色データがありません。', copied: 'クリップボードにコピーしました！', copyFail: 'コピーに失敗しました。', noShare: '共有する色データがありません。', linkTooLong: 'データが多すぎます。バックアップを利用してください。', shared: '共有リンクをコピーしました！', imageError: '画像作成中にエラーが発生しました。', restoreDone: 'データを復元しました。', restoreInvalid: 'バックアップファイル形式が正しくありません。', restoreError: 'ファイル読み込み中にエラーが発生しました。', confirmYes: 'OK', lineBreakHint: 'Enterキーで改行できます。', editTip: 'マスをタップして名前と話を書こう！'
                 }
             },
             colorFamiliesData: [
                 { name: '레드', h: 0, s: 85 }, { name: '오렌지', h: 25, s: 90 }, { name: '옐로우', h: 45, s: 95 }, { name: '그린', h: 120, s: 75 }, { name: '민트', h: 160, s: 70 }, { name: '블루', h: 210, s: 85 }, { name: '퍼플', h: 270, s: 75 }, { name: '핑크', h: 330, s: 85 }, { name: '브라운', h: 25, s: 45 }, { name: '모노', h: 0, s: 0 }
             ],
             t(key) { return this.translations[this.currentLang][key] || this.translations.ko[key] || key; },
+            showToast(message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                if (!container) { return; }
+                const emoji = type === 'success' ? '🎉' : (type === 'error' ? '😅' : '💡');
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.setAttribute('role', 'status');
+                toast.innerHTML = `<span class="toast-emoji">${emoji}</span><span></span>`;
+                toast.lastElementChild.textContent = message;
+                container.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.add('show'));
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 2600);
+            },
+            showConfirm(message, icon = '🤔') {
+                return new Promise((resolve) => {
+                    const modal = document.getElementById('confirmModal');
+                    const content = document.getElementById('confirmContent');
+                    document.getElementById('confirmMessage').textContent = message;
+                    document.getElementById('confirmIcon').textContent = icon;
+                    const okBtn = document.getElementById('confirmOkBtn');
+                    const cancelBtn = document.getElementById('confirmCancelBtn');
+                    const close = (result) => {
+                        modal.classList.add('opacity-0');
+                        content.classList.add('scale-95');
+                        okBtn.onclick = null;
+                        cancelBtn.onclick = null;
+                        document.removeEventListener('keydown', onKey);
+                        setTimeout(() => modal.classList.add('hidden'), 200);
+                        resolve(result);
+                    };
+                    const onKey = (e) => {
+                        if (e.key === 'Escape') { close(false); }
+                        if (e.key === 'Enter') { close(true); }
+                    };
+                    okBtn.onclick = () => close(true);
+                    cancelBtn.onclick = () => close(false);
+                    document.addEventListener('keydown', onKey);
+                    modal.classList.remove('hidden');
+                    requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); });
+                    okBtn.focus();
+                });
+            },
+            stepGrid(inputId, delta) {
+                const input = document.getElementById(inputId);
+                const next = Math.min(Math.max((parseInt(input.value) || 1) + delta, 1), 10);
+                input.value = next;
+            },
             init() {
                 this.currentLang = localStorage.getItem(this.langKey) || 'ko';
                 document.getElementById('languageSelect').value = this.currentLang;
@@ -279,7 +438,7 @@
                         this.saveState();
                         this.showWorkspace();
                     } catch (e) {
-                        alert(this.t('invalidLink'));
+                        this.showToast(this.t('invalidLink'), 'error');
                         this.showSetup();
                     }
                 } else if (this.loadSavedPalette()) {
@@ -353,20 +512,21 @@
                 this.syncSetupInputs();
                 this.renderGrid();
             },
-            resetToSetup() {
-                if (confirm(this.t('remakeConfirm'))) {
+            async resetToSetup() {
+                if (await this.showConfirm(this.t('remakeConfirm'), '🎨')) {
                     this.saveState();
                     this.showSetup();
                     window.history.pushState({}, document.title, window.location.pathname);
                 }
             },
-            clearSavedPalette() {
-                if (confirm(this.t('resetConfirm'))) {
+            async clearSavedPalette() {
+                if (await this.showConfirm(this.t('resetConfirm'), '🗑️')) {
                     localStorage.removeItem(this.storageKey);
                     this.state = { cols: 3, rows: 3, borderWidth: 4, cells: [] };
                     this.syncSetupInputs();
                     window.history.pushState({}, document.title, window.location.pathname);
                     this.showSetup();
+                    this.showToast(this.t('reset'), 'success');
                 }
             },
             toggleBackupMenu() {
@@ -472,6 +632,8 @@
                 status.textContent = total ? this.t('status').replace('{filled}', filled).replace('{total}', total) + (filled === total ? ` · ${this.t('fullStatus')}` : '') : '';
                 const addRowButton = document.getElementById('addRowButton');
                 if (addRowButton) addRowButton.classList.toggle('hidden', !(total && filled === total && this.state.rows < 10));
+                const editTip = document.getElementById('editTip');
+                if (editTip) editTip.style.display = filled > 0 ? 'none' : 'flex';
             },
             renderGrid() {
                 const container = document.getElementById('paletteContainer');
@@ -493,7 +655,7 @@
                         </div>
                         <div class="m-2 md:m-3 bg-white/90 dark:bg-black/70 backdrop-blur-md rounded-xl p-3 sm:p-4 flex flex-col items-center justify-center text-center shadow-sm w-full min-h-[calc(100%-1rem)]">
                             <textarea rows="1" class="card-text-input card-name-input font-bold text-base sm:text-lg md:text-2xl mb-2 text-gray-900 dark:text-white" placeholder="${this.t('emptyName')}" onclick="event.stopPropagation(); app.activeCardId=${cell.id};" oninput="app.updateCellInline(${cell.id}, 'name', this.value); app.resizeTextarea(this);">${this.escapeHtml(cell.name)}</textarea>
-                            <textarea rows="1" class="card-text-input card-story-input text-xs sm:text-sm text-gray-700 dark:text-gray-300" placeholder="${this.t('emptyStory')}" onclick="event.stopPropagation(); app.activeCardId=${cell.id};" oninput="app.updateCellInline(${cell.id}, 'story', this.value); app.resizeTextarea(this);">${this.escapeHtml(cell.story)}</textarea>
+                            <textarea rows="1" class="card-text-input card-story-input text-sm sm:text-base text-gray-700 dark:text-gray-300" placeholder="${this.t('emptyStory')}" onclick="event.stopPropagation(); app.activeCardId=${cell.id};" oninput="app.updateCellInline(${cell.id}, 'story', this.value); app.resizeTextarea(this);">${this.escapeHtml(cell.story)}</textarea>
                         </div>
                     `;
                     container.appendChild(el);
@@ -530,13 +692,14 @@
                 this.currentEditingId = id;
                 const cell = this.state.cells.find(c => c.id === id);
                 this.updateSelectedColor(cell.color || '#ffb3ba');
-                document.getElementById('cellName').value = cell.name;
+                const nameField = document.getElementById('cellName');
+                nameField.value = cell.name;
                 document.getElementById('cellStory').value = cell.story;
                 document.getElementById('shadesContainer').classList.add('hidden');
                 const modal = document.getElementById('editModal');
                 const content = document.getElementById('modalContent');
                 modal.classList.remove('hidden');
-                setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
+                setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); this.resizeTextarea(nameField); }, 10);
             },
             closeModal() {
                 const modal = document.getElementById('editModal');
@@ -550,7 +713,7 @@
                 const name = document.getElementById('cellName').value.trim();
                 const story = document.getElementById('cellStory').value.trim();
                 if (!name) {
-                    alert(this.t('requiredName'));
+                    this.showToast(this.t('requiredName'), 'error');
                     document.getElementById('cellName').focus();
                     return;
                 }
@@ -569,7 +732,7 @@
                     textBlock.textContent = textarea.value || textarea.getAttribute('placeholder') || '';
                     textBlock.style.height = 'auto';
                     textBlock.style.minHeight = `${textarea.scrollHeight}px`;
-                    textBlock.style.whiteSpace = textarea.classList.contains('card-story-input') ? 'pre-wrap' : 'normal';
+                    textBlock.style.whiteSpace = 'pre-wrap';
                     textBlock.style.overflow = 'visible';
                     textarea.replaceWith(textBlock);
                 });
@@ -588,13 +751,13 @@
                     link.href = canvas.toDataURL('image/jpeg', 0.9);
                     link.click();
                 } catch (error) {
-                    alert(this.t('imageError'));
+                    this.showToast(this.t('imageError'), 'error');
                     console.error(error);
                 }
             },
             copyToClipboard() {
                 const filledCells = this.state.cells.filter(c => c.name || c.story);
-                if (filledCells.length === 0) { alert(this.t('noCopy')); return; }
+                if (filledCells.length === 0) { this.showToast(this.t('noCopy'), 'error'); return; }
                 let textToCopy = '🎨 Color Story\n\n';
                 filledCells.forEach(cell => {
                     textToCopy += `[${cell.name || this.t('emptyName')}] (${cell.color})\n`;
@@ -605,24 +768,24 @@
                 tempTextarea.value = textToCopy;
                 document.body.appendChild(tempTextarea);
                 tempTextarea.select();
-                try { document.execCommand('copy'); alert(this.t('copied')); }
-                catch (err) { alert(this.t('copyFail')); }
+                try { document.execCommand('copy'); this.showToast(this.t('copied'), 'success'); }
+                catch (err) { this.showToast(this.t('copyFail'), 'error'); }
                 document.body.removeChild(tempTextarea);
             },
             shareLink() {
                 const filledCells = this.state.cells.filter(c => c.name || c.story);
-                if (filledCells.length === 0) { alert(this.t('noShare')); return; }
+                if (filledCells.length === 0) { this.showToast(this.t('noShare'), 'error'); return; }
                 try {
                     const shareUrl = `${window.location.origin}${window.location.pathname}?data=${LZString.compressToEncodedURIComponent(JSON.stringify(this.state))}`;
-                    if (shareUrl.length > 2000) { alert(this.t('linkTooLong')); return; }
+                    if (shareUrl.length > 2000) { this.showToast(this.t('linkTooLong'), 'error'); return; }
                     const tempTextarea = document.createElement('textarea');
                     tempTextarea.value = shareUrl;
                     document.body.appendChild(tempTextarea);
                     tempTextarea.select();
                     document.execCommand('copy');
                     document.body.removeChild(tempTextarea);
-                    alert(this.t('shared'));
-                } catch (e) { alert(this.t('linkTooLong')); }
+                    this.showToast(this.t('shared'), 'success');
+                } catch (e) { this.showToast(this.t('linkTooLong'), 'error'); }
             },
             exportJSON() {
                 const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.state, null, 2));
@@ -644,9 +807,9 @@
                             this.state = this.normalizeState(parsedData);
                             this.saveState();
                             this.showWorkspace();
-                            alert(this.t('restoreDone'));
-                        } else alert(this.t('restoreInvalid'));
-                    } catch (err) { alert(this.t('restoreError')); }
+                            this.showToast(this.t('restoreDone'), 'success');
+                        } else this.showToast(this.t('restoreInvalid'), 'error');
+                    } catch (err) { this.showToast(this.t('restoreError'), 'error'); }
                 };
                 reader.readAsText(file);
                 event.target.value = '';
