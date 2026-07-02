@@ -1,41 +1,41 @@
-# Color Story
+# Color Story (색깔 이야기)
 
-Color Story is a single-page palette maker for naming colors, writing stories, saving work locally, and sharing or backing up the result. It's designed with elementary-school users in mind: friendly toast messages instead of browser alerts, generous line-break support, and simple stepper controls.
+Color Story는 색깔에 이름을 붙이고 이야기를 적어 나만의 팔레트를 만드는 싱글 페이지 웹앱입니다. 초등학생 사용자를 고려해 브라우저 기본 알림 대신 친근한 토스트 메시지를 사용하고, 줄바꿈을 폭넓게 지원하며, 조작이 쉬운 스테퍼 버튼을 제공합니다.
 
-## Features
+## 주요 기능
 
-- Create a custom grid from 1×1 to 10×10 using compact +/− stepper buttons.
-- Set the card border thickness while editing a palette.
-- Edit each card's color name and story directly on the card with borderless, auto-resizing fields.
-- Write multi-line names and stories — press Enter to add a line break, both on-card and in the detail modal.
-- Open detailed color controls from a card-only action button that appears after selecting a card.
-- Friendly toast notifications and a custom confirm dialog (with emoji) replace plain browser alert/confirm popups.
-- A first-use tip banner reminds new users to tap a card to start writing, and hides itself once a card is filled.
-- Preserve line breaks everywhere: on-screen, in exported images, copied text, and share links.
-- Save palette state in browser local storage so refreshes do not erase work.
-- Export as an image, copy text, create a compressed share link, or use the top-right disk menu for JSON backup/restore.
-- Switch between Korean, English, and Japanese.
-- Use dark/light mode and mobile-friendly controls.
-- Show a full-grid notice and offer an add-row action when every card is filled.
+- +/− 스테퍼 버튼으로 1×1부터 10×10까지 원하는 크기의 그리드를 생성합니다.
+- 팔레트를 편집하는 동안 카드 테두리 두께를 조절할 수 있습니다.
+- 테두리 없는 자동 높이 조절 입력창으로 카드에서 바로 색 이름과 이야기를 수정합니다.
+- 카드와 상세 모달 모두에서 Enter 키로 줄바꿈하며 여러 줄 이름/이야기를 작성할 수 있습니다.
+- 카드를 선택하면 나타나는 버튼으로 세부 색상 조정 화면을 엽니다.
+- 브라우저 기본 alert/confirm 대신 이모지가 있는 친근한 토스트 알림과 커스텀 확인창을 사용합니다.
+- 처음 사용하는 사용자를 위한 안내 배너가 표시되며, 카드를 채우면 자동으로 사라집니다.
+- 화면 표시, 이미지 내보내기, 텍스트 복사, 공유 링크 어디서든 줄바꿈이 그대로 유지됩니다.
+- 팔레트 상태를 브라우저 로컬 스토리지에 저장해 새로고침해도 작업 내용이 유지됩니다.
+- 이미지 내보내기, 텍스트 복사, 압축된 공유 링크 생성, 우측 상단 디스크 메뉴를 통한 JSON 백업/복원을 지원합니다.
+- 한국어, 영어, 일본어를 전환할 수 있습니다.
+- 다크/라이트 모드와 모바일 친화적인 조작을 지원합니다.
+- 모든 칸이 채워지면 안내 문구와 함께 줄 추가 버튼을 제공합니다.
 
-## Usage
+## 사용 방법
 
-1. Open `index.html` in a browser.
-2. Choose columns and rows with the +/− steppers, then tap "시작하기" (Start).
-3. Type names and stories directly into cards — Enter creates a new line.
-4. Click a card to reveal the details button, then adjust its color if needed.
-5. Use the top-right disk icon to choose backup or restore.
+1. 브라우저에서 `index.html`을 엽니다.
+2. +/− 스테퍼로 가로·세로 칸 수를 정한 뒤 "시작하기" 버튼을 누릅니다.
+3. 카드에 색 이름과 이야기를 바로 입력합니다 — Enter로 줄바꿈이 가능합니다.
+4. 카드를 클릭해 상세 버튼을 누르면 색상을 조정할 수 있습니다.
+5. 우측 상단 디스크 아이콘으로 백업 또는 복원을 선택합니다.
 
-## Development
+## 개발
 
-No build step is required. To serve locally:
+별도의 빌드 과정이 필요 없습니다. 로컬에서 실행하려면:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Open `http://localhost:8000` in your browser.
+브라우저에서 `http://localhost:8000`에 접속합니다.
 
-## Storage
+## 저장소
 
-Palette data is stored in the browser's local storage. Use JSON backup for important palettes because browser data can be cleared by private browsing, cache cleanup, or switching devices.
+팔레트 데이터는 브라우저의 로컬 스토리지에 저장됩니다. 시크릿 모드, 캐시 삭제, 기기 변경 등으로 데이터가 사라질 수 있으므로 중요한 팔레트는 JSON 백업 기능을 이용해 보관하세요.
