@@ -156,23 +156,25 @@
 
         /* 그리드 수 조절 스테퍼 버튼 */
         .stepper-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             border: 1px solid #D8D8D8;
             background: #fff;
             color: #246BEB;
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 1rem;
+            line-height: 1;
             flex-shrink: 0;
-            transition: background-color 0.15s, transform 0.1s;
+            transition: background-color 0.15s, transform 0.1s, border-color 0.15s;
         }
-        .stepper-btn:hover { background: #eff4ff; }
-        .stepper-btn:active { transform: scale(0.92); }
+        .stepper-btn:hover { background: #eff4ff; border-color: #a9c5f7; }
+        .stepper-btn:active { transform: scale(0.9); }
         .dark .stepper-btn { background: #2b2b2b; border-color: #52525b; color: #93b4f8; }
-        .dark .stepper-btn:hover { background: #3f3f46; }
+        .dark .stepper-btn:hover { background: #3f3f46; border-color: #71717a; }
         .card-actions { opacity: 0; transform: translateY(-4px); pointer-events: none; }
         .palette-card.is-active .card-actions { opacity: 1; transform: translateY(0); pointer-events: auto; }
         @media (max-width: 640px) {
@@ -216,32 +218,33 @@
     </header>
 
     <main class="flex-grow w-full max-w-5xl mx-auto p-4 flex flex-col items-center justify-center">
-        <section id="setupScreen" class="flex flex-col items-center justify-center w-full max-w-md bg-white dark:bg-darkCard p-5 sm:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 gap-7">
+        <section id="setupScreen" class="flex flex-col items-center justify-center w-full max-w-md bg-white dark:bg-darkCard p-5 sm:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 gap-6">
             <div class="text-center space-y-2">
                 <h2 class="text-2xl title-font text-gray-800 dark:text-gray-100" data-i18n="setupTitle">팔레트 만들기</h2>
                 <p class="text-gray-500 dark:text-gray-400 text-sm" data-i18n="setupDesc">원하는 칸 수를 입력하고 나만의 색깔을 채워보세요.</p>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 w-full">
-                <div class="flex flex-col items-center gap-2">
+            <div class="flex items-end justify-center gap-3 sm:gap-4 flex-wrap">
+                <div class="flex flex-col items-center gap-1.5">
                     <label class="text-xs font-bold text-gray-500" for="gridCols" data-i18n="cols">가로</label>
-                    <div class="flex items-center gap-2 w-full">
-                        <button type="button" class="stepper-btn text-2xl" onclick="app.stepGrid('gridCols', -1)" aria-label="minus">−</button>
-                        <input type="number" id="gridCols" min="1" max="10" value="3" class="krds-field w-full p-3 text-xl dark:bg-gray-800 dark:border-gray-600 text-center font-bold" aria-label="columns">
-                        <button type="button" class="stepper-btn text-2xl" onclick="app.stepGrid('gridCols', 1)" aria-label="plus">+</button>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" class="stepper-btn" onclick="app.stepGrid('gridCols', -1)" aria-label="minus">−</button>
+                        <input type="number" id="gridCols" min="1" max="10" value="3" class="krds-field w-14 p-2 text-lg dark:bg-gray-800 dark:border-gray-600 text-center font-bold" aria-label="columns">
+                        <button type="button" class="stepper-btn" onclick="app.stepGrid('gridCols', 1)" aria-label="plus">+</button>
                     </div>
                 </div>
-                <div class="flex flex-col items-center gap-2">
+                <span class="text-lg font-bold text-gray-300 dark:text-gray-600 pb-2">×</span>
+                <div class="flex flex-col items-center gap-1.5">
                     <label class="text-xs font-bold text-gray-500" for="gridRows" data-i18n="rows">세로</label>
-                    <div class="flex items-center gap-2 w-full">
-                        <button type="button" class="stepper-btn text-2xl" onclick="app.stepGrid('gridRows', -1)" aria-label="minus">−</button>
-                        <input type="number" id="gridRows" min="1" max="10" value="3" class="krds-field w-full p-3 text-xl dark:bg-gray-800 dark:border-gray-600 text-center font-bold" aria-label="rows">
-                        <button type="button" class="stepper-btn text-2xl" onclick="app.stepGrid('gridRows', 1)" aria-label="plus">+</button>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" class="stepper-btn" onclick="app.stepGrid('gridRows', -1)" aria-label="minus">−</button>
+                        <input type="number" id="gridRows" min="1" max="10" value="3" class="krds-field w-14 p-2 text-lg dark:bg-gray-800 dark:border-gray-600 text-center font-bold" aria-label="rows">
+                        <button type="button" class="stepper-btn" onclick="app.stepGrid('gridRows', 1)" aria-label="plus">+</button>
                     </div>
                 </div>
             </div>
 
-            <button onclick="app.createNewGrid()" class="krds-btn krds-primary w-full text-lg" data-i18n="createGrid">그리드 생성하기</button>
+            <button onclick="app.createNewGrid()" class="krds-btn krds-primary w-full text-lg" data-i18n="createGrid">시작하기</button>
         </section>
 
         <section id="workspaceScreen" class="hidden flex-col w-full gap-4 sm:gap-6">
@@ -361,13 +364,13 @@
             currentLang: 'ko',
             translations: {
                 ko: {
-                    setupTitle: '팔레트 만들기', setupDesc: '원하는 칸 수를 입력하고 나만의 색깔을 채워보세요.', cols: '가로', rows: '세로', borderWidth: '테두리 두께', createGrid: '그리드 생성하기', myPalette: '나만의 팔레트', addRow: '줄 추가', remake: '다시 만들기', reset: '초기화', image: '이미지', text: '텍스트', link: '링크', backup: '백업', restore: '복원', modalTitle: '색깔 담기', colorFamily: '1. 기본 색상 계열 (10가지)', colorShade: '2. 디테일 색상 선택 (20가지)', selectedColor: '최종 선택 색상:', customColor: '직접 혼합', nameRequired: '이름 (필수)', storyOptional: '이야기 (선택)', cancel: '취소', save: '저장하기', detail: '세부사항', emptyName: '색 이름', emptyStory: '이야기를 입력하세요', namePlaceholder: '예: 봄바람 핑크', storyPlaceholder: '이 색상과 관련된 당신의 이야기를 적어보세요...', status: '{filled}/{total}칸 사용 중', fullStatus: '모든 칸이 채워졌어요. 줄 추가로 공간을 넓힐 수 있습니다.', resetConfirm: '저장된 팔레트와 현재 내용을 모두 초기화하시겠습니까?', remakeConfirm: '새 그리드를 만들기 위해 설정 화면으로 이동할까요? 현재 팔레트는 브라우저에 저장됩니다.', invalidLink: '유효하지 않은 링크 데이터입니다.', requiredName: '이름은 필수 입력 항목입니다.', noCopy: '복사할 색깔 데이터가 없습니다.', copied: '클립보드에 복사되었습니다!', copyFail: '복사에 실패했습니다.', noShare: '공유할 색깔 데이터가 없습니다.', linkTooLong: '데이터가 너무 많아 링크로 생성할 수 없습니다. 백업 기능을 이용해주세요.', shared: '공유 링크가 클립보드에 복사되었습니다!', imageError: '이미지 캡처 중 오류가 발생했습니다.', restoreDone: '데이터 복원이 완료되었습니다.', restoreInvalid: '올바르지 않은 백업 파일 형식입니다.', restoreError: '파일을 읽는 중 오류가 발생했습니다.', confirmYes: '확인', lineBreakHint: 'Enter 키를 누르면 줄을 바꿀 수 있어요.', editTip: '칸을 눌러 색 이름과 이야기를 직접 적어보세요!'
+                    setupTitle: '팔레트 만들기', setupDesc: '원하는 칸 수를 입력하고 나만의 색깔을 채워보세요.', cols: '가로', rows: '세로', borderWidth: '테두리 두께', createGrid: '시작하기', myPalette: '나만의 팔레트', addRow: '줄 추가', remake: '다시 만들기', reset: '초기화', image: '이미지', text: '텍스트', link: '링크', backup: '백업', restore: '복원', modalTitle: '색깔 담기', colorFamily: '1. 기본 색상 계열 (10가지)', colorShade: '2. 디테일 색상 선택 (20가지)', selectedColor: '최종 선택 색상:', customColor: '직접 혼합', nameRequired: '이름 (필수)', storyOptional: '이야기 (선택)', cancel: '취소', save: '저장하기', detail: '세부사항', emptyName: '색 이름', emptyStory: '이야기를 입력하세요', namePlaceholder: '예: 봄바람 핑크', storyPlaceholder: '이 색상과 관련된 당신의 이야기를 적어보세요...', status: '{filled}/{total}칸 사용 중', fullStatus: '모든 칸이 채워졌어요. 줄 추가로 공간을 넓힐 수 있습니다.', resetConfirm: '저장된 팔레트와 현재 내용을 모두 초기화하시겠습니까?', remakeConfirm: '새 그리드를 만들기 위해 설정 화면으로 이동할까요? 현재 팔레트는 브라우저에 저장됩니다.', invalidLink: '유효하지 않은 링크 데이터입니다.', requiredName: '이름은 필수 입력 항목입니다.', noCopy: '복사할 색깔 데이터가 없습니다.', copied: '클립보드에 복사되었습니다!', copyFail: '복사에 실패했습니다.', noShare: '공유할 색깔 데이터가 없습니다.', linkTooLong: '데이터가 너무 많아 링크로 생성할 수 없습니다. 백업 기능을 이용해주세요.', shared: '공유 링크가 클립보드에 복사되었습니다!', imageError: '이미지 캡처 중 오류가 발생했습니다.', restoreDone: '데이터 복원이 완료되었습니다.', restoreInvalid: '올바르지 않은 백업 파일 형식입니다.', restoreError: '파일을 읽는 중 오류가 발생했습니다.', confirmYes: '확인', lineBreakHint: 'Enter 키를 누르면 줄을 바꿀 수 있어요.', editTip: '칸을 눌러 색 이름과 이야기를 직접 적어보세요!'
                 },
                 en: {
-                    setupTitle: 'Create palette', setupDesc: 'Choose a grid size and fill it with your own colors.', cols: 'Columns', rows: 'Rows', borderWidth: 'Border width', createGrid: 'Create grid', myPalette: 'My palette', addRow: 'Add row', remake: 'Remake', reset: 'Reset', image: 'Image', text: 'Text', link: 'Link', backup: 'Backup', restore: 'Restore', modalTitle: 'Add color', colorFamily: '1. Color family (10)', colorShade: '2. Shade (20)', selectedColor: 'Selected color:', customColor: 'Custom', nameRequired: 'Name (required)', storyOptional: 'Story (optional)', cancel: 'Cancel', save: 'Save', detail: 'Details', emptyName: 'Color name', emptyStory: 'Write a story', namePlaceholder: 'Example: Spring breeze pink', storyPlaceholder: 'Write your story about this color...', status: '{filled}/{total} cells used', fullStatus: 'The grid is full. Add a row to make more space.', resetConfirm: 'Clear the saved palette and current contents?', remakeConfirm: 'Move to setup to create a new grid? Your current palette will stay saved.', invalidLink: 'Invalid link data.', requiredName: 'Name is required.', noCopy: 'No color data to copy.', copied: 'Copied to clipboard!', copyFail: 'Copy failed.', noShare: 'No color data to share.', linkTooLong: 'Too much data for a link. Use backup instead.', shared: 'Share link copied to clipboard!', imageError: 'An error occurred while creating the image.', restoreDone: 'Data restored.', restoreInvalid: 'Invalid backup file format.', restoreError: 'An error occurred while reading the file.', confirmYes: 'OK', lineBreakHint: 'Press Enter to start a new line.', editTip: 'Tap a card to write its name and story!'
+                    setupTitle: 'Create palette', setupDesc: 'Choose a grid size and fill it with your own colors.', cols: 'Columns', rows: 'Rows', borderWidth: 'Border width', createGrid: 'Start', myPalette: 'My palette', addRow: 'Add row', remake: 'Remake', reset: 'Reset', image: 'Image', text: 'Text', link: 'Link', backup: 'Backup', restore: 'Restore', modalTitle: 'Add color', colorFamily: '1. Color family (10)', colorShade: '2. Shade (20)', selectedColor: 'Selected color:', customColor: 'Custom', nameRequired: 'Name (required)', storyOptional: 'Story (optional)', cancel: 'Cancel', save: 'Save', detail: 'Details', emptyName: 'Color name', emptyStory: 'Write a story', namePlaceholder: 'Example: Spring breeze pink', storyPlaceholder: 'Write your story about this color...', status: '{filled}/{total} cells used', fullStatus: 'The grid is full. Add a row to make more space.', resetConfirm: 'Clear the saved palette and current contents?', remakeConfirm: 'Move to setup to create a new grid? Your current palette will stay saved.', invalidLink: 'Invalid link data.', requiredName: 'Name is required.', noCopy: 'No color data to copy.', copied: 'Copied to clipboard!', copyFail: 'Copy failed.', noShare: 'No color data to share.', linkTooLong: 'Too much data for a link. Use backup instead.', shared: 'Share link copied to clipboard!', imageError: 'An error occurred while creating the image.', restoreDone: 'Data restored.', restoreInvalid: 'Invalid backup file format.', restoreError: 'An error occurred while reading the file.', confirmYes: 'OK', lineBreakHint: 'Press Enter to start a new line.', editTip: 'Tap a card to write its name and story!'
                 },
                 ja: {
-                    setupTitle: 'パレットを作成', setupDesc: 'グリッド数を決めて、自分だけの色を入れましょう。', cols: '横', rows: '縦', borderWidth: '枠線の太さ', createGrid: 'グリッド作成', myPalette: '私のパレット', addRow: '行を追加', remake: '作り直す', reset: '初期化', image: '画像', text: 'テキスト', link: 'リンク', backup: 'バックアップ', restore: '復元', modalTitle: '色を入れる', colorFamily: '1. 基本色系統（10）', colorShade: '2. 詳細色（20）', selectedColor: '選択色:', customColor: '直接選択', nameRequired: '名前（必須）', storyOptional: 'ストーリー（任意）', cancel: 'キャンセル', save: '保存', detail: '詳細', emptyName: '色の名前', emptyStory: 'ストーリーを書く', namePlaceholder: '例: 春風ピンク', storyPlaceholder: 'この色にまつわる話を書いてください...', status: '{filled}/{total}マス使用中', fullStatus: 'すべてのマスが埋まりました。行を追加できます。', resetConfirm: '保存されたパレットと現在の内容を初期化しますか？', remakeConfirm: '新しいグリッド作成のため設定画面へ移動しますか？現在のパレットは保存されます。', invalidLink: '無効なリンクデータです。', requiredName: '名前は必須です。', noCopy: 'コピーする色データがありません。', copied: 'クリップボードにコピーしました！', copyFail: 'コピーに失敗しました。', noShare: '共有する色データがありません。', linkTooLong: 'データが多すぎます。バックアップを利用してください。', shared: '共有リンクをコピーしました！', imageError: '画像作成中にエラーが発生しました。', restoreDone: 'データを復元しました。', restoreInvalid: 'バックアップファイル形式が正しくありません。', restoreError: 'ファイル読み込み中にエラーが発生しました。', confirmYes: 'OK', lineBreakHint: 'Enterキーで改行できます。', editTip: 'マスをタップして名前と話を書こう！'
+                    setupTitle: 'パレットを作成', setupDesc: 'グリッド数を決めて、自分だけの色を入れましょう。', cols: '横', rows: '縦', borderWidth: '枠線の太さ', createGrid: 'はじめる', myPalette: '私のパレット', addRow: '行を追加', remake: '作り直す', reset: '初期化', image: '画像', text: 'テキスト', link: 'リンク', backup: 'バックアップ', restore: '復元', modalTitle: '色を入れる', colorFamily: '1. 基本色系統（10）', colorShade: '2. 詳細色（20）', selectedColor: '選択色:', customColor: '直接選択', nameRequired: '名前（必須）', storyOptional: 'ストーリー（任意）', cancel: 'キャンセル', save: '保存', detail: '詳細', emptyName: '色の名前', emptyStory: 'ストーリーを書く', namePlaceholder: '例: 春風ピンク', storyPlaceholder: 'この色にまつわる話を書いてください...', status: '{filled}/{total}マス使用中', fullStatus: 'すべてのマスが埋まりました。行を追加できます。', resetConfirm: '保存されたパレットと現在の内容を初期化しますか？', remakeConfirm: '新しいグリッド作成のため設定画面へ移動しますか？現在のパレットは保存されます。', invalidLink: '無効なリンクデータです。', requiredName: '名前は必須です。', noCopy: 'コピーする色データがありません。', copied: 'クリップボードにコピーしました！', copyFail: 'コピーに失敗しました。', noShare: '共有する色データがありません。', linkTooLong: 'データが多すぎます。バックアップを利用してください。', shared: '共有リンクをコピーしました！', imageError: '画像作成中にエラーが発生しました。', restoreDone: 'データを復元しました。', restoreInvalid: 'バックアップファイル形式が正しくありません。', restoreError: 'ファイル読み込み中にエラーが発生しました。', confirmYes: 'OK', lineBreakHint: 'Enterキーで改行できます。', editTip: 'マスをタップして名前と話を書こう！'
                 }
             },
             colorFamiliesData: [
@@ -449,6 +452,14 @@
                 document.addEventListener('click', (event) => {
                     if (!event.target.closest('#backupMenu') && !event.target.closest('#backupMenuButton')) this.closeBackupMenu();
                     if (!event.target.closest('.palette-card')) this.clearActiveCard();
+                });
+                if (document.fonts && document.fonts.ready) {
+                    document.fonts.ready.then(() => this.resizeAllTextareas());
+                }
+                let resizeTimer;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(() => this.resizeAllTextareas(), 150);
                 });
             },
             applyI18n() {
